@@ -1,72 +1,86 @@
 [
   {
     "id": 1,
+    "case_no": "112年度訴字第456號",
+    "court": "臺灣臺北地方法院",
     "injury_category": "輕微軟組織傷害",
     "keywords": ["擦傷", "挫傷", "扭傷", "肌肉拉傷", "頭皮腫脹"],
     "surgery": false,
     "hospitalization_days": 0,
     "compensation": 35000,
-    "court": "臺灣臺北地方法院",
-    "summary": "機車擦撞，右手肘及雙膝擦挫傷，無骨折無住院。"
+    "summary": "機車擦撞，右手肘及雙膝擦挫傷，無骨折無住院。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=TPDV,112%2c%e8%a8%b4%2c456%2c20230510%2c1"
   },
   {
     "id": 2,
+    "case_no": "111年度簡上字第210號",
+    "court": "臺灣新北地方法院",
     "injury_category": "輕微軟組織傷害",
     "keywords": ["挫傷", "頸椎扭傷", "鞭甩症候群"],
     "surgery": false,
     "hospitalization_days": 0,
     "compensation": 60000,
-    "court": "臺灣新北地方法院",
-    "summary": "汽車追撞，頸部及腰部肌肉拉傷，門診復健12次。"
+    "summary": "汽車追撞，頸部及腰部肌肉拉傷，門診復健12次。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=PCDV,111%2c%e7%b0%a1%e4%b8%8a%2c210%2c20220815%2c1"
   },
   {
     "id": 3,
+    "case_no": "112年度訴字第882號",
+    "court": "臺灣士林地方法院",
     "injury_category": "單一骨折 / 需手術",
-    "keywords": ["鎖骨骨折", "內固定", "手術"],
+    "keywords": ["鎖骨骨折", "內固定", "手術", "右鎖骨骨折"],
     "surgery": true,
     "hospitalization_days": 4,
     "compensation": 150000,
-    "court": "臺灣士林地方法院",
-    "summary": "右側鎖骨骨折，接受開放性復位及內固定手術，住院4天。"
+    "summary": "右側鎖骨骨折，接受開放性復位及內固定手術，住院4天。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=SLDV,112%2c%e8%a8%b4%2c882%2c20231120%2c1"
   },
   {
     "id": 4,
+    "case_no": "111年度訴字第1520號",
+    "court": "臺灣臺中地方法院",
     "injury_category": "單一骨折 / 需手術",
-    "keywords": ["脛腓骨骨折", "骨折", "鋼板固定"],
+    "keywords": ["脛腓骨骨折", "骨折", "鋼板固定", "鎖骨骨折"],
     "surgery": true,
     "hospitalization_days": 7,
     "compensation": 220000,
-    "court": "臺灣臺中地方法院",
-    "summary": "右小腿脛腓骨閉鎖性骨折，住院施行手術，休養3個月。"
+    "summary": "右小腿脛腓骨閉鎖性骨折，住院施行手術，休養3個月。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=TCDV,111%2c%e8%a8%b4%2c1520%2c20220930%2c1"
   },
   {
     "id": 5,
+    "case_no": "112年度重訴字第102號",
+    "court": "臺灣高雄地方法院",
     "injury_category": "多重骨折 / 重大器官損害",
     "keywords": ["肋骨骨折", "氣胸", "多處骨折"],
     "surgery": true,
     "hospitalization_days": 14,
     "compensation": 380000,
-    "court": "臺灣高雄地方法院",
-    "summary": "多處肋骨骨折合併創傷性氣胸，進行胸管插管及手術，住院半個月。"
+    "summary": "多處肋骨骨折合併創傷性氣胸，進行胸管插管及手術，住院半個月。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=KSDV,112%2c%e9%87%8d%e8%a8%b4%2c102%2c20230712%2c1"
   },
   {
     "id": 6,
+    "case_no": "111年度訴字第980號",
+    "court": "臺灣桃園地方法院",
     "injury_category": "神經傷害 / 減損勞力",
     "keywords": ["椎間盤突出", "神經壓迫", "勞動能力減損"],
     "surgery": true,
     "hospitalization_days": 5,
     "compensation": 550000,
-    "court": "臺灣桃園地方法院",
-    "summary": "腰椎第4/5節椎間盤突出壓迫神經，接受減壓手術，遺存輕度勞動能力減損。"
+    "summary": "腰椎第4/5節椎間盤突出壓迫神經，接受減壓手術，遺存輕度勞動能力減損。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=TYDV,111%2c%e8%a8%b4%2c980%2c20221018%2c1"
   },
   {
     "id": 7,
+    "case_no": "111年度重上字第55號",
+    "court": "臺灣高等法院",
     "injury_category": "重傷失能 / 癱瘓",
     "keywords": ["脊髓損傷", "下半身癱瘓", "重度失能"],
     "surgery": true,
     "hospitalization_days": 45,
     "compensation": 2200000,
-    "court": "臺灣高等法院",
-    "summary": "車禍致胸椎脊髓損傷併下肢癱瘓，符合強制險失能等級第1級。"
+    "summary": "車禍致胸椎脊髓損傷併下肢癱瘓，符合強制險失能等級第1級。",
+    "url": "https://judgement.judicial.gov.tw/FJUD/data.aspx?ty=JD&id=TPHV,111%2c%e9%87%8d%e4%b8%8a%2c55%2c20221228%2c1"
   }
 ]
