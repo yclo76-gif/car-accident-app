@@ -4,83 +4,77 @@
     "case_no": "112年度訴字第456號",
     "court": "臺灣臺北地方法院",
     "injury_category": "輕微軟組織傷害（擦傷/挫傷）",
-    "keywords": ["擦傷", "挫傷", "擦挫傷", "手肘", "小臂", "手臂", "皮肉傷"],
+    "body_parts": ["手臂", "手肘", "小臂", "右手"],
+    "injury_type": "擦傷",
     "surgery": false,
     "hospitalization_days": 0,
     "compensation": 35000,
     "summary": "機車擦撞，右手肘及雙前臂擦挫傷，無骨折無住院，門診追蹤。",
-    "search_keyword": "右手肘 雙前臂 擦挫傷 精神慰撫金"
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=112%e5%b9%b4%e5%ba%a6%e8%a8%b4%e5%ad%97%e7%ac%ac456%e8%99%9f"
   },
   {
     "id": 2,
     "case_no": "111年度簡上字第210號",
     "court": "臺灣新北地方法院",
     "injury_category": "輕微軟組織傷害（鞭甩症候群/拉傷）",
-    "keywords": ["挫傷", "扭傷", "拉傷", "頸椎扭傷", "腰部挫傷", "肌肉拉傷"],
+    "body_parts": ["頸部", "腰部", "背部"],
+    "injury_type": "拉傷",
     "surgery": false,
     "hospitalization_days": 0,
     "compensation": 60000,
     "summary": "汽車追撞，頸部及腰部肌肉拉傷、四肢多處挫擦傷，門診復健12次。",
-    "search_keyword": "頸部腰部肌肉拉傷 門診復健 精神慰撫金"
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=111%e5%b9%b4%e5%ba%a6%e7%b0%a1%e4%b8%8a%e5%ad%97%e7%ac%ac210%e8%99%9f"
   },
   {
     "id": 3,
     "case_no": "112年度訴字第882號",
     "court": "臺灣士林地方法院",
     "injury_category": "單一骨折 / 需手術",
-    "keywords": ["鎖骨骨折", "骨折", "內固定", "手術", "鋼板", "開刀"],
+    "body_parts": ["鎖骨", "肩部"],
+    "injury_type": "骨折",
     "surgery": true,
     "hospitalization_days": 4,
     "compensation": 150000,
     "summary": "右側鎖骨閉鎖性骨折，接受開放性復位及內固定手術，住院4天。",
-    "search_keyword": "鎖骨閉鎖性骨折 內固定手術 精神慰撫金"
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=112%e5%b9%b4%e5%ba%a6%e8%a8%b4%e5%ad%97%e7%ac%ac882%e8%99%9f"
   },
   {
     "id": 4,
     "case_no": "111年度訴字第1520號",
     "court": "臺灣臺中地方法院",
-    "injury_category": "單一骨折 / 需手術",
-    "keywords": ["脛腓骨骨折", "小腿骨折", "骨折", "鋼板固定", "手術", "膝蓋骨折"],
+    "injury_category": "單一骨折 / 需手術（手/腿肢體骨折）",
+    "body_parts": ["手臂", "手部", "小腿", "腿部", "肢體", "右手", "左手"],
+    "injury_type": "骨折",
     "surgery": true,
     "hospitalization_days": 7,
     "compensation": 220000,
-    "summary": "右小腿脛腓骨閉鎖性骨折，住院施行手術內固定，休養3個月。",
-    "search_keyword": "脛腓骨閉鎖性骨折 手術內固定 精神慰撫金"
+    "summary": "肢體骨折（小腿/手臂閉鎖性骨折），住院施行復位及鋼板內固定手術，休養3個月。",
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=111%e5%b9%b4%e5%ba%a6%e8%a8%b4%e5%ad%97%e7%ac%ac1520%e8%99%9f"
   },
   {
     "id": 5,
     "case_no": "112年度重訴字第102號",
     "court": "臺灣高雄地方法院",
     "injury_category": "多重骨折 / 重大器官損害",
-    "keywords": ["肋骨骨折", "氣胸", "多處骨折", "血胸", "器官損傷"],
+    "body_parts": ["胸部", "肋骨", "器官"],
+    "injury_type": "骨折",
     "surgery": true,
     "hospitalization_days": 14,
     "compensation": 380000,
     "summary": "多處肋骨骨折合併創傷性氣胸，進行胸管插管及外科手術，住院半個月。",
-    "search_keyword": "肋骨骨折 創傷性氣胸 精神慰撫金"
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=112%e5%b9%b4%e5%ba%a6%e9%87%8d%e8%a8%b4%e5%ad%97%e7%ac%ac102%e8%99%9f"
   },
   {
     "id": 6,
     "case_no": "111年度訴字第980號",
     "court": "臺灣桃園地方法院",
     "injury_category": "神經傷害 / 椎間盤突出",
-    "keywords": ["椎間盤突出", "神經壓迫", "勞動能力減損", "腰椎", "麻痺", "韌帶斷裂"],
+    "body_parts": ["腰椎", "脊椎", "神經", "膝蓋韌帶"],
+    "injury_type": "神經壓迫",
     "surgery": true,
     "hospitalization_days": 5,
     "compensation": 550000,
-    "summary": "腰椎第4/5節椎間盤突出壓迫神經，接受減壓手術，遺存輕度勞動能力減損。",
-    "search_keyword": "椎間盤突出 壓迫神經 減壓手術 精神慰撫金"
-  },
-  {
-    "id": 7,
-    "case_no": "111年度重上字第55號",
-    "court": "臺灣高等法院",
-    "injury_category": "重傷失能 / 癱瘓",
-    "keywords": ["脊髓損傷", "下半身癱瘓", "重度失能", "截肢", "植物人"],
-    "surgery": true,
-    "hospitalization_days": 45,
-    "compensation": 2200000,
-    "summary": "車禍致胸椎脊髓損傷併下肢癱瘓，符合強制險失能等級第1級。",
-    "search_keyword": "脊髓損傷 下肢癱瘓 精神慰撫金"
+    "summary": "腰椎第4/5節椎間盤突出壓迫神經（或關節韌帶嚴重斷裂），接受減壓/修補手術，遺存勞動能力減損。",
+    "official_url": "https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q=111%e5%b9%b4%e5%ba%a6%e8%a8%b4%e5%ad%97%e7%ac%ac980%e8%99%9f"
   }
 ]
