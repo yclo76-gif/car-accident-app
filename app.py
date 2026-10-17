@@ -14,7 +14,7 @@ st.set_page_config(
 # 1. 配置 Gemini API
 # -------------------------------------------------------------------------
 api_key = (
-    st.secrets.get("GEMINI_API_KEY")
+    st.secrets.get("AQ.Ab8RN6LpoyevFXjdWGrA-3bOWk_w9BaFKwtlqhfxcUOIWJ21YA")
     if "GEMINI_API_KEY" in st.secrets
     else None
 )
