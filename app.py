@@ -1,5 +1,5 @@
 import json
-import urllib.parse
+import re
 import google.generativeai as genai
 import streamlit as st
 
@@ -11,23 +11,23 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------------------
-# 1. 配置 Gemini API
+# 1. 自動偵測與隱藏 API 金鑰設定
 # -------------------------------------------------------------------------
-api_key = (
-    st.secrets.get("AQ.Ab8RN6LpoyevFXjdWGrA-3bOWk_w9BaFKwtlqhfxcUOIWJ21YA")
-    if "GEMINI_API_KEY" in st.secrets
-    else None
-)
+# 從 Streamlit secrets 讀取，如果沒有，才顯示輸入欄位
+api_key = st.secrets.get("GEMINI_API_KEY", None)
 
 if not api_key:
-  st.sidebar.subheader("🔑 Gemini API 金鑰設定")
+  st.sidebar.subheader("🔑 Gemini API 設定")
   api_key = st.sidebar.text_input(
       "請輸入 Gemini API Key", type="password", help="可在 Google AI Studio 免費申請"
   )
 
 if api_key:
-  genai.configure(api_key=api_key)
-  model = genai.GenerativeModel("gemini-1.5-flash")
+  try:
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-1.5-flash")
+  except Exception:
+    model = None
 else:
   model = None
 
@@ -46,7 +46,7 @@ data = load_data()
 
 st.title("⚖️ 台灣車禍體傷精神慰撫金·精準判例檢索與試算系統")
 st.markdown(
-    "本系統嚴格根據輸入的**傷勢診斷名稱**進行精準比對過濾，**非相關傷勢絕對不納入試算與顯示**，並提供直接檢索司法院正本之官方連結。"
+    "本系統採用**『解剖部位 + 傷勢類型』嚴格雙重比對演算法**。非精準吻合之部位與傷勢**絕不混入計算**，確保試算結果公正客觀。"
 )
 
 if "analyzed" not in st.session_state:
@@ -60,11 +60,11 @@ input_mode = st.sidebar.radio(
 
 if input_mode == "手動鍵入傷勢/病況":
   injury_text = st.sidebar.text_area(
-      "傷勢診斷描述（例如：右手擦傷、左鎖骨骨折、右膝前十字韌帶斷裂）", "右手擦傷"
+      "傷勢診斷描述（例如：右手骨折、右手擦傷、鎖骨骨折）", "右手骨折"
   )
-  has_surgery_input = st.sidebar.checkbox("是否有接受手術/住院開刀", value=False)
+  has_surgery_input = st.sidebar.checkbox("是否有接受手術/住院開刀", value=True)
   hospital_days_input = st.sidebar.number_input(
-      "住院天數", min_value=0, max_value=180, value=0
+      "住院天數", min_value=0, max_value=180, value=3
   )
   uploaded_file = None
 else:
@@ -93,80 +93,99 @@ if run_analysis:
 # 未點擊按鈕時的提示
 if not st.session_state.analyzed:
   st.info(
-      "👈 請在左側輸入具體傷勢，然後點擊 **「🚀 執行精準判例分析」**"
-      " 按鈕以過濾相關判例與計算正確金額。"
+      "👈 請在左側輸入具體傷勢描述（例如：**右手骨折** 或 **右手擦傷**），點擊"
+      " **「🚀 執行精準判例分析」**。"
   )
 else:
   # -------------------------------------------------------------------------
-  # 2. Gemini AI 語意解析關鍵字
+  # 2. Gemini AI 或規則引擎拆解『部位』與『傷勢』
   # -------------------------------------------------------------------------
-  extracted_keywords = []
+  target_body_part = ""
+  target_injury_type = ""
+
   if model and (injury_text or uploaded_file):
-    with st.spinner("🤖 AI 正在精準剖析傷勢醫學特徵..."):
+    with st.spinner("🤖 AI 正在進行高精度醫學語意拆解..."):
       prompt = f"""
-            你是一個專業的台灣車禍理賠與法律診斷助手。請分析以下車禍傷勢描述，並提取出核心傷勢關鍵字（例如：擦傷、骨折、韌帶斷裂等）。
-            傷勢描述：{injury_text}
-            
-            請以 JSON 格式回傳：
-            - "keywords": 核心傷勢詞彙陣列，例如 ["擦傷", "挫傷", "皮肉傷"]
+            請分析以下車禍傷勢："{injury_text}"
+            請精準拆解出：
+            1. 主要解剖部位 (如：右手, 手臂, 鎖骨, 腿部, 頸部)
+            2. 主要傷勢類型 (如：骨折, 擦傷, 挫傷, 拉傷, 斷裂)
+            請只回傳 JSON 格式：
+            {{"body_part": "部位名稱", "injury_type": "傷勢類型"}}
             """
       try:
         response = model.generate_content(prompt)
-        clean_text = (
-            response.text.replace("```json", "")
-            .replace("```", "")
-            .strip()
-        )
-        ai_result = json.loads(clean_text)
-        extracted_keywords = ai_result.get("keywords", [])
+        clean_json = re.search(r"\{.*\}", response.text, re.DOTALL).group()
+        res_json = json.loads(clean_json)
+        target_body_part = res_json.get("body_part", "")
+        target_injury_type = res_json.get("injury_type", "")
       except Exception:
-        extracted_keywords = [
-            kw.strip()
-            for kw in injury_text.replace("，", ",")
-            .replace("、", ",")
-            .split(",")
-            if kw.strip()
-        ]
-  else:
-    extracted_keywords = [
-        kw.strip()
-        for kw in injury_text.replace("，", ",").replace("、", ",").split(",")
-        if kw.strip()
-    ]
+        target_body_part = injury_text
+        target_injury_type = injury_text
+
+  # 本地規則雙重保險
+  if not target_body_part or target_body_part == injury_text:
+    if "鎖骨" in injury_text:
+      target_body_part = "鎖骨"
+    elif any(x in injury_text for x in ["手", "臂"]):
+      target_body_part = "手臂"
+
+  if not target_injury_type or target_injury_type == injury_text:
+    if "骨折" in injury_text:
+      target_injury_type = "骨折"
+    elif any(x in injury_text for x in ["擦傷", "挫傷"]):
+      target_injury_type = "擦傷"
+
+  st.success(
+      f"🔍 **精準對比特徵標籤**：部位 `[{target_body_part}]` ｜ 傷勢"
+      f" `[{target_injury_type}]`"
+  )
 
   # -------------------------------------------------------------------------
-  # 3. 嚴格過濾機制 (Strict Filtering)：僅保留與傷勢吻合的判例
+  # 3. 嚴格對比比對邏輯 (Strict Filtering)
   # -------------------------------------------------------------------------
   matched_records = []
   if data:
     for item in data:
-      is_matched = False
-      # 檢查輸入的關鍵字是否命中判例的 keywords
-      for q_kw in extracted_keywords:
-        for r_kw in item.get("keywords", []):
-          if q_kw in r_kw or r_kw in q_kw:
-            is_matched = True
-            break
-        if is_matched:
+      body_match = False
+      type_match = False
+
+      # 比對部位
+      for b in item.get("body_parts", []):
+        if (
+            b in target_body_part
+            or target_body_part in b
+            or b in injury_text
+            or injury_text in b
+        ):
+          body_match = True
           break
 
-      # 只有【符合傷勢條件】的案件才會加入比對集
-      if is_matched:
+      # 比對傷勢類型
+      i_type = item.get("injury_type", "")
+      if (
+          i_type in target_injury_type
+          or target_injury_type in i_type
+          or i_type in injury_text
+      ):
+        type_match = True
+
+      # 只有【部位】與【傷勢類型】同時吻合才放入結果池！
+      if body_match and type_match:
         matched_records.append(item)
 
   # -------------------------------------------------------------------------
-  # 4. 呈現比對結果與動態金額計算
+  # 4. 顯示結果與金額計算
   # -------------------------------------------------------------------------
   if not matched_records:
     st.error(
-        f"⚠️ 針對您輸入的傷勢條件「**{injury_text}**」，目前的數據庫中暫無100%完全吻合的判例。"
+        f"⚠️ 數據庫中暫無同時符合部位「{target_body_part}」且傷勢為「{target_injury_type}」的歷史判例！"
     )
-    st.warning("建議您適度調整關鍵字描述，或擴充資料庫以包含更多相關傷勢判例。")
+    st.warning("請試著調整傷勢描述，或於 data.json 中新增該特徵之真實判例。")
   else:
-    # 只針對【嚴格吻合】的判例計算 P25, P50, P75
     raw_comps = [r["compensation"] for r in matched_records]
 
-    # 住院與手術微調
+    # 加權微調
     days_modifier = (
         1.0
         + (hospital_days_input * 0.02)
@@ -183,11 +202,11 @@ else:
     if 惡性違規加重:
       p25, p50, p75 = int(p25 * 1.3), int(p50 * 1.3), int(p75 * 1.3)
 
-    st.success(
-        f"🎯 成功過濾出 {len(matched_records)} 筆符合「**{injury_text}**」傷勢特徵的精準歷史判例！"
+    st.info(
+        f"🎯 成功過濾出 {len(matched_records)} 筆精準符合「**{injury_text}**」的司法院判例！"
     )
 
-    # 顯示金額卡片（此處金額將隨傷勢改變而精確連動！）
+    # 儀表板金額（隨傷勢連動！）
     col1, col2, col3 = st.columns(3)
     col1.metric("🟢 保守求償 / 和解下限 (P25)", f"NT$ {p25:,}")
     col2.metric("🟡 大數據審判中位數 (P50)", f"NT$ {p50:,}")
@@ -195,7 +214,7 @@ else:
 
     st.markdown("---")
 
-    # 實際理賠試算
+    # 實際理賠金額
     st.subheader("💡 實際理賠/給付金額建議試算（過失相抵後）")
     net_p50 = int(p50 * (1 - 肇事責任比 / 100))
     st.info(
@@ -204,7 +223,7 @@ else:
     )
 
     # -------------------------------------------------------------------------
-    # 5. 顯示符合傷勢的判例與【司法院真實搜尋正本連結】
+    # 5. 判例對照與【司法院正本直連】
     # -------------------------------------------------------------------------
     st.subheader("📋 司法院歷史真實判例對照")
 
@@ -217,18 +236,13 @@ else:
       )
 
       with st.expander(title):
-        st.write(f"**裁判字號**：`{case_no}`")
+        st.write(f"**正式裁判字號**：`{case_no}`")
         st.write(f"**案情與傷勢摘要**：{r['summary']}")
         st.write(
             f"**醫療特徵**：手術: {'是' if r['surgery'] else '否'} | 參考住院天數:"
             f" {r['hospitalization_days']}天"
         )
 
-        # 生成司法院官方【關鍵字精準檢索 URL】（可保證 100% 成功開啟查看判決全文）
-        search_kw = r.get("search_keyword", case_no)
-        encoded_kw = urllib.parse.quote(f"{case_no} {search_kw}")
-        judicial_url = f"https://judgment.judicial.gov.tw/FJUD/qryresults.aspx?q={encoded_kw}"
-
         st.markdown(
-            f"🔗 **[👉 點此直連司法院官方系統檢索【{case_no}】判決全文正本]({judicial_url})**"
+            f"🔗 **[👉 點此直連司法院官方系統檢視【{case_no}】判決全文正本]({r['official_url']})**"
         )
