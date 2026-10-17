@@ -11,9 +11,8 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------------------
-# 1. 自動偵測與隱藏 API 金鑰設定
+# 1. 自動偵測 Gemini API 金鑰
 # -------------------------------------------------------------------------
-# 從 Streamlit secrets 讀取，如果沒有，才顯示輸入欄位
 api_key = st.secrets.get("GEMINI_API_KEY", None)
 
 if not api_key:
@@ -46,7 +45,7 @@ data = load_data()
 
 st.title("⚖️ 台灣車禍體傷精神慰撫金·精準判例檢索與試算系統")
 st.markdown(
-    "本系統採用**『解剖部位 + 傷勢類型』嚴格雙重比對演算法**。非精準吻合之部位與傷勢**絕不混入計算**，確保試算結果公正客觀。"
+    "本系統採用**『解剖部位 + 傷勢類型』同義詞包容比對演算法**。非精準吻合之部位與傷勢**絕不混入計算**，確保試算結果公正客觀。"
 )
 
 if "analyzed" not in st.session_state:
@@ -60,11 +59,11 @@ input_mode = st.sidebar.radio(
 
 if input_mode == "手動鍵入傷勢/病況":
   injury_text = st.sidebar.text_area(
-      "傷勢診斷描述（例如：右手骨折、右手擦傷、鎖骨骨折）", "右手骨折"
+      "傷勢診斷描述（例如：右手挫傷、右手骨折、鎖骨骨折）", "右手挫傷"
   )
-  has_surgery_input = st.sidebar.checkbox("是否有接受手術/住院開刀", value=True)
+  has_surgery_input = st.sidebar.checkbox("是否有接受手術/住院開刀", value=False)
   hospital_days_input = st.sidebar.number_input(
-      "住院天數", min_value=0, max_value=180, value=3
+      "住院天數", min_value=0, max_value=180, value=0
   )
   uploaded_file = None
 else:
@@ -90,27 +89,26 @@ run_analysis = st.sidebar.button(
 if run_analysis:
   st.session_state.analyzed = True
 
-# 未點擊按鈕時的提示
+# 未點擊按鈕時提示
 if not st.session_state.analyzed:
   st.info(
-      "👈 請在左側輸入具體傷勢描述（例如：**右手骨折** 或 **右手擦傷**），點擊"
-      " **「🚀 執行精準判例分析」**。"
+      "👈 請在左側輸入具體傷勢描述，點擊 **「🚀 執行精準判例分析」**。"
   )
 else:
   # -------------------------------------------------------------------------
-  # 2. Gemini AI 或規則引擎拆解『部位』與『傷勢』
+  # 2. Gemini AI 剖析部位與傷勢類型
   # -------------------------------------------------------------------------
   target_body_part = ""
   target_injury_type = ""
 
   if model and (injury_text or uploaded_file):
-    with st.spinner("🤖 AI 正在進行高精度醫學語意拆解..."):
+    with st.spinner("🤖 Gemini AI 正在進行高精度醫學語意拆解..."):
       prompt = f"""
             請分析以下車禍傷勢："{injury_text}"
-            請精準拆解出：
+            請拆解出：
             1. 主要解剖部位 (如：右手, 手臂, 鎖骨, 腿部, 頸部)
-            2. 主要傷勢類型 (如：骨折, 擦傷, 挫傷, 拉傷, 斷裂)
-            請只回傳 JSON 格式：
+            2. 主要傷勢類型 (如：擦傷, 挫傷, 骨折, 拉傷, 斷裂)
+            請以 JSON 格式回傳：
             {{"body_part": "部位名稱", "injury_type": "傷勢類型"}}
             """
       try:
@@ -123,7 +121,7 @@ else:
         target_body_part = injury_text
         target_injury_type = injury_text
 
-  # 本地規則雙重保險
+  # 規則保險
   if not target_body_part or target_body_part == injury_text:
     if "鎖骨" in injury_text:
       target_body_part = "鎖骨"
@@ -137,12 +135,12 @@ else:
       target_injury_type = "擦傷"
 
   st.success(
-      f"🔍 **精準對比特徵標籤**：部位 `[{target_body_part}]` ｜ 傷勢"
+      f"🔍 **Gemini AI 辨識標籤**：部位 `[{target_body_part}]` ｜ 傷勢"
       f" `[{target_injury_type}]`"
   )
 
   # -------------------------------------------------------------------------
-  # 3. 嚴格對比比對邏輯 (Strict Filtering)
+  # 3. 彈性同義詞比對演算法
   # -------------------------------------------------------------------------
   matched_records = []
   if data:
@@ -161,21 +159,24 @@ else:
           body_match = True
           break
 
-      # 比對傷勢類型
-      i_type = item.get("injury_type", "")
-      if (
-          i_type in target_injury_type
-          or target_injury_type in i_type
-          or i_type in injury_text
-      ):
-        type_match = True
+      # 比對傷勢類型（同義詞包含判定）
+      injury_list = item.get("injury_types", [item.get("injury_type", "")])
+      for t in injury_list:
+        if (
+            t in target_injury_type
+            or target_injury_type in t
+            or t in injury_text
+            or injury_text in t
+        ):
+          type_match = True
+          break
 
-      # 只有【部位】與【傷勢類型】同時吻合才放入結果池！
+      # 只有【部位】與【傷勢類型】同時吻合才納入計算
       if body_match and type_match:
         matched_records.append(item)
 
   # -------------------------------------------------------------------------
-  # 4. 顯示結果與金額計算
+  # 4. 結果呈現與動態試算
   # -------------------------------------------------------------------------
   if not matched_records:
     st.error(
@@ -185,7 +186,7 @@ else:
   else:
     raw_comps = [r["compensation"] for r in matched_records]
 
-    # 加權微調
+    # 住院與手術微調
     days_modifier = (
         1.0
         + (hospital_days_input * 0.02)
@@ -206,7 +207,7 @@ else:
         f"🎯 成功過濾出 {len(matched_records)} 筆精準符合「**{injury_text}**」的司法院判例！"
     )
 
-    # 儀表板金額（隨傷勢連動！）
+    # 儀表板金額（跟隨傷勢連動！）
     col1, col2, col3 = st.columns(3)
     col1.metric("🟢 保守求償 / 和解下限 (P25)", f"NT$ {p25:,}")
     col2.metric("🟡 大數據審判中位數 (P50)", f"NT$ {p50:,}")
@@ -223,7 +224,7 @@ else:
     )
 
     # -------------------------------------------------------------------------
-    # 5. 判例對照與【司法院正本直連】
+    # 5. 判例對照與司法院正本直連
     # -------------------------------------------------------------------------
     st.subheader("📋 司法院歷史真實判例對照")
 
